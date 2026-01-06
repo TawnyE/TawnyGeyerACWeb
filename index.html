@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TawnyGeyserAC | Bedrock Anti-Cheat</title>
+    <meta name="description" content="PacketEvents-powered anti-cheat specifically designed for Geyser and Floodgate. Supports 1.16 - 1.21+.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- PrismJS (Syntax Highlighting) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        code, pre { font-family: 'JetBrains Mono', monospace; }
+        
+        .tawny-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .bg-tawny-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .grid-bg {
+            background-color: #050505;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: #f59e0b;
+            box-shadow: 0 0 15px #f59e0b;
+            opacity: 0.5;
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Tab Animations */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .active-tab { 
+            border-bottom: 2px solid #f59e0b; 
+            color: #f59e0b; 
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amber: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706' },
+                        dark: '#050505',
+                        surface: '#0f0f11'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-gray-300 selection:bg-amber-500 selection:text-black">
+
+    <!-- Floating Navbar -->
+    <div class="fixed top-0 left-0 w-full z-50 p-4 pointer-events-none">
+        <nav class="max-w-4xl mx-auto bg-surface/80 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 flex justify-between items-center shadow-2xl pointer-events-auto">
+            <a href="#" class="font-bold text-xl tracking-tight text-white flex items-center gap-2">
+                <i class="fa-solid fa-shield-cat text-amber-500"></i> Tawny<span class="text-amber-500">Geyser</span>AC
+            </a>
+            <div class="hidden md:flex gap-6 text-sm font-medium">
+                <a href="#features" class="hover:text-amber-400 transition">Features</a>
+                <a href="#docs" class="hover:text-amber-400 transition">Docs & Config</a>
+                <a href="#download" class="hover:text-amber-400 transition">Download</a>
+            </div>
+            <a href="https://discord.gg/xRchyJFkBG" target="_blank" class="text-gray-400 hover:text-[#5865F2] transition text-lg">
+                <i class="fa-brands fa-discord"></i>
+            </a>
+        </nav>
+    </div>
+
+    <!-- HERO SECTION -->
+    <header class="relative pt-40 pb-20 px-4 overflow-hidden grid-bg border-b border-white/5">
+        <div class="scanner-line absolute left-0 top-0 pointer-events-none"></div>
+        
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono mb-6">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                v2.0 RELEASED: NOW WITH PACKETEVENTS
+            </div>
+
+            <h1 class="text-6xl md:text-8xl font-bold text-white mb-6 leading-none">
+                Don't ban lag.<br>
+                Ban <span class="tawny-gradient">the cheats.</span>
+            </h1>
+            
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-10">
+                A high-performance anti-cheat built exclusively for <strong>Bedrock Edition</strong>. 
+                Using PacketEvents 2.11 to analyze inputs, predicting controllers vs touch, 
+                and ignoring Java players completely.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <a href="#download" class="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+                    Get It Now
+                </a>
+                <a href="#docs" class="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold rounded-lg transition">
+                    View Config
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- METRICS / INFO STRIP -->
+    <div class="border-b border-white/5 bg-surface">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-center md:justify-between py-8 px-6 gap-8">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded bg-amber-500/10 flex items-center justify-center text-amber-500"><i class="fa-solid fa-microchip"></i></div>
+                <div>
+                    <div class="text-white font-bold">PacketEvents 2.11</div>
+                    <div class="text-xs text-gray-500">Netty Injection Tech</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded bg-blue-500/10 flex items-center justify-center text-blue-500"><i class="fa-solid fa-gamepad"></i></div>
+                <div>
+                    <div class="text-white font-bold">Input Profiling</div>
+                    <div class="text-xs text-gray-500">Touch vs Controller Logic</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded bg-purple-500/10 flex items-center justify-center text-purple-500"><i class="fa-solid fa-wind"></i></div>
+                <div>
+                    <div class="text-white font-bold">1.21 Native</div>
+                    <div class="text-xs text-gray-500">Mace & Wind Charge Ready</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="py-24 px-4 bg-dark">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white mb-4">Why TawnyAC?</h2>
+                <p class="text-gray-400">Standard anti-cheats break Bedrock players. We fix that.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-surface border border-white/5 p-8 rounded-2xl hover:border-amber-500/30 transition group">
+                    <i class="fa-solid fa-bolt text-3xl text-amber-500 mb-6 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="text-xl font-bold text-white mb-3">Zero Latency</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        By using PacketEvents, we intercept packets <strong>asynchronously</strong> before the main thread. This handles Geyser's "packet bursting" (10 packets in 1 tick) without false positives.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-surface border border-white/5 p-8 rounded-2xl hover:border-amber-500/30 transition group">
+                    <i class="fa-solid fa-fingerprint text-3xl text-amber-500 mb-6 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="text-xl font-bold text-white mb-3">Input Profiling</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        We detect if a player is on Mobile or Controller. A controller player snapping 180° instantly? <strong>Flagged.</strong> A mobile player with perfect aim? <strong>Flagged.</strong>
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-surface border border-white/5 p-8 rounded-2xl hover:border-amber-500/30 transition group">
+                    <i class="fa-solid fa-ghost text-3xl text-amber-500 mb-6 group-hover:scale-110 transition duration-300"></i>
+                    <h3 class="text-xl font-bold text-white mb-3">Java Ignored</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        The plugin is coded to completely ignore Java players. This saves massive amounts of CPU resources and ensures your Java players never get false flagged.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DOCUMENTATION TABS (Single Page) -->
+    <section id="docs" class="py-24 px-4 bg-surface border-y border-white/5">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Technical Specs</h2>
+                    <p class="text-gray-400 text-sm">Everything you need to configure the plugin.</p>
+                </div>
+                <!-- Tabs -->
+                <div class="flex gap-6 border-b border-white/10 mt-6 md:mt-0">
+                    <button onclick="switchTab('checks')" id="tab-btn-checks" class="active-tab pb-3 text-sm font-bold uppercase tracking-wider transition hover:text-white">Checks</button>
+                    <button onclick="switchTab('config')" id="tab-btn-config" class="text-gray-500 pb-3 text-sm font-bold uppercase tracking-wider transition hover:text-white">Config.yml</button>
+                    <button onclick="switchTab('install')" id="tab-btn-install" class="text-gray-500 pb-3 text-sm font-bold uppercase tracking-wider transition hover:text-white">Install</button>
+                </div>
+            </div>
+
+            <div class="bg-dark border border-white/5 rounded-xl p-1 min-h-[400px]">
+                
+                <!-- Tab: Checks -->
+                <div id="tab-checks" class="tab-content active p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-surface p-4 rounded border border-white/5">
+                            <h4 class="text-amber-500 font-bold mb-2">Movement</h4>
+                            <ul class="text-sm text-gray-400 space-y-2">
+                                <li><span class="text-white font-mono">Speed A:</span> Friction/Ice checking + Controller acceleration logic.</li>
+                                <li><span class="text-white font-mono">Speed B:</span> Packet timing consistency (Burst detection).</li>
+                                <li><span class="text-white font-mono">Speed C:</span> Average speed over time.</li>
+                                <li><span class="text-white font-mono">Fly A:</span> Gravity & Ascention limits.</li>
+                                <li><span class="text-white font-mono">Fly B:</span> NoFall / Ground Spoofing.</li>
+                                <li><span class="text-white font-mono">Timer A:</span> Packet Balance checking.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-surface p-4 rounded border border-white/5">
+                            <h4 class="text-red-500 font-bold mb-2">Combat</h4>
+                            <ul class="text-sm text-gray-400 space-y-2">
+                                <li><span class="text-white font-mono">Reach A:</span> Hitbox expansion for Bedrock + Ping compensation.</li>
+                                <li><span class="text-white font-mono">Aim A:</span> Snap Aim detection (Controller vs Touch).</li>
+                                <li><span class="text-white font-mono">Autoclicker A:</span> CPS & Consistency patterns (Macros).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Config -->
+                <div id="tab-config" class="tab-content">
+                    <pre class="rounded-lg !bg-dark !m-0 !p-6 h-[400px] overflow-y-auto custom-scrollbar"><code class="language-yaml"># TawnyGeyserAC v2.0 Configuration
+
+settings:
+  # Only check Bedrock/Floodgate users? (Recommended: true)
+  bedrock-only: true
+  
+  # Teleport player back on violation
+  lagback: true
+  lagback-delay: 2
+
+alerts:
+  enabled: true
+  format: "&8[&6TGAC&8] &e%player% &7failed &c%check% &8(&cVL:%vl%&8) &7%info%"
+  console: true
+  sound:
+    enabled: true
+    type: "BLOCK_NOTE_BLOCK_PLING"
+
+checks:
+  movement:
+    speed-a:
+      enabled: true
+      max-vl: 10
+      reset-time: 60
+    fly-a:
+      enabled: true
+      max-vl: 8
+  
+  combat:
+    reach-a:
+      enabled: true
+      max-vl: 5
+      max-reach: 3.1</code></pre>
+                </div>
+
+                <!-- Tab: Install -->
+                <div id="tab-install" class="tab-content p-8">
+                    <ol class="list-decimal list-inside space-y-6 text-gray-300">
+                        <li>
+                            <strong class="text-white">Install Dependencies</strong>
+                            <p class="text-sm text-gray-500 mt-1 ml-5">Ensure you have <span class="text-amber-500">Floodgate</span> and <span class="text-amber-500">Geyser</span> installed. You must run <strong>Java 21</strong>.</p>
+                        </li>
+                        <li>
+                            <strong class="text-white">Drag & Drop</strong>
+                            <p class="text-sm text-gray-500 mt-1 ml-5">Place <code class="bg-white/10 px-1 rounded">TawnyGeyserAC.jar</code> into your plugins folder.</p>
+                        </li>
+                        <li>
+                            <strong class="text-white">Restart</strong>
+                            <p class="text-sm text-gray-500 mt-1 ml-5">Restart the server. Do not use /reload as PacketEvents needs to inject into Netty on startup.</p>
+                        </li>
+                        <li>
+                            <strong class="text-white">Permissions</strong>
+                            <p class="text-sm text-gray-500 mt-1 ml-5">
+                                <code class="text-amber-500">tgac.admin</code> - Access to commands.<br>
+                                <code class="text-amber-500">tgac.alerts</code> - See alerts.<br>
+                                <code class="text-amber-500">tgac.bypass</code> - Bypass all checks.
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- DOWNLOAD / PRICING -->
+    <section id="download" class="py-24 px-4 bg-dark relative">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-dark to-dark pointer-events-none"></div>
+        
+        <div class="max-w-5xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-white mb-4">Get the Plugin</h2>
+                <p class="text-gray-400">Choose your path. The code is 100% identical.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                
+                <!-- Free Tier -->
+                <div class="bg-surface/50 border border-white/5 rounded-2xl p-8 flex flex-col hover:border-white/20 transition">
+                    <div class="mb-6">
+                        <span class="bg-gray-800 text-gray-300 px-3 py-1 rounded text-xs font-bold uppercase">Community</span>
+                        <h3 class="text-2xl font-bold text-white mt-2">Modrinth</h3>
+                        <p class="text-sm text-gray-500">Supported by ads.</p>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8 flex-1 text-sm text-gray-400">
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-green-500"></i> Full Anti-Cheat Features</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-clock text-yellow-500"></i> <strong>Updates Delayed (5-8 Days)</strong></li>
+                        <li class="flex gap-3"><i class="fa-solid fa-rectangle-ad text-gray-500"></i> Ad-Link Download</li>
+                    </ul>
+
+                    <a href="#" class="w-full block py-4 text-center rounded-lg border border-white/10 text-white font-bold hover:bg-white/5 transition">
+                        Download Free
+                    </a>
+                </div>
+
+                <!-- Paid Tier -->
+                <div class="bg-gradient-to-b from-amber-500/10 to-surface border border-amber-500/30 rounded-2xl p-8 flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-amber-500 text-black text-xs font-bold px-3 py-1 rounded-bl-lg">EARLY ACCESS</div>
+                    
+                    <div class="mb-6">
+                        <span class="bg-amber-500/20 text-amber-500 px-3 py-1 rounded text-xs font-bold uppercase">Premium</span>
+                        <h3 class="text-2xl font-bold text-white mt-2">BuiltByBit</h3>
+                        <p class="text-sm text-gray-500">Direct support for development.</p>
+                    </div>
+                    
+                    <ul class="space-y-4 mb-8 flex-1 text-sm text-gray-300">
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-amber-500"></i> <strong>Instant Updates (Day 0)</strong></li>
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-amber-500"></i> Direct Download (No Ads)</li>
+                        <li class="flex gap-3"><i class="fa-solid fa-check text-amber-500"></i> Priority Discord Support</li>
+                    </ul>
+
+                    <a href="#" class="w-full block py-4 text-center rounded-lg bg-amber-500 text-black font-bold hover:bg-amber-400 transition shadow-lg shadow-amber-500/20">
+                        Purchase Access
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-10 bg-black border-t border-white/5 text-center text-sm">
+        <p class="text-gray-500 mb-2">&copy; 2025 Tawny. All rights reserved.</p>
+        <p class="text-gray-700 text-xs">
+            TawnyGeyserAC is not affiliated with Mojang AB or Microsoft.<br>
+            "Minecraft" is a trademark of Mojang Synergies AB.
+        </p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        function switchTab(tabId) {
+            // Remove active class from all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Remove active style from buttons
+            document.querySelectorAll('button[id^="tab-btn-"]').forEach(btn => {
+                btn.classList.remove('active-tab', 'text-amber-500');
+                btn.classList.add('text-gray-500');
+            });
+
+            // Activate content
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            // Activate button
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            activeBtn.classList.remove('text-gray-500');
+            activeBtn.classList.add('active-tab', 'text-amber-500');
+        }
+    </script>
+</body>
+</html>
